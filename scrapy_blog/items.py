@@ -16,10 +16,16 @@ class ScrapyBlogItem(scrapy.Item):
     title = scrapy.Field()
     # 描述
     describe = scrapy.Field()
+    # 详细链接
+    url = scrapy.Field()
+    # 文章内容
+    content = scrapy.Field()
     # 创建时间
-    create_at = scrapy.Field()
+    create_time = scrapy.Field()
     # 作者
-    auther = scrapy.Field()
+    author = scrapy.Field()
+    # 作者头像
+    head_img = scrapy.Field()
     # 点击量
     clicks = scrapy.Field()
     # 点赞量
