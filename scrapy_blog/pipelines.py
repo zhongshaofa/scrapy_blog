@@ -28,14 +28,14 @@ class ScrapyBlogPipeline(object):
 
         # 插入数据库中去
         insert = "INSERT INTO article " \
-                 "(`author`, `clicks`,  `create_time`, `describe`, `head_img`, `praise`, `title`, `url`, `content`)\
-        VALUES ('" + item['author'] + "', '" + item['clicks'] + "', '" + item['create_time'] \
-                 + "', '" + item['describe'] + "', '" + item['head_img'] + "', '" + item['praise'] + "', '" \
-                 + item['title'] + "', '" + item['url'] + "', '" + item['content'] + "')"
+                 "(`author`, `clicks`, `content`,  `create_time`, `describe`, `head_img`, `praise`, `title`, `url`)\
+        VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s')" \
+                 % (item['author'], item['clicks'], pymysql.escape_string(item['content']), item['create_time'], item['describe'], item['head_img'],
+                    item['praise'], item['title'], item['url'])
         try:
             self.cursor.execute(insert)
             self.db.commit()
         except Exception as e:
             self.db.rollback()
             return e
-        return item
+        return item['title']
