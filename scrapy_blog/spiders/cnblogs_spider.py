@@ -9,7 +9,7 @@ class CnblogsSpiderSpider(scrapy.Spider):
     allowed_domains = ['www.cnblogs.com']
     start_urls = ['https://www.cnblogs.com']
     index = 1
-    number = 3
+    number = 10
 
     # 爬取数据
     def parse(self, response):
@@ -47,6 +47,7 @@ class CnblogsSpiderSpider(scrapy.Spider):
         items['head_img'] = "http:" + items['head_img']
         items['describe'] = self.filter_html_tag(items['describe'])
         items['create_time'] = self.get_create_time(items['create_time'])
+        items['clicks'] = self.get_clicks(items['clicks'])
         return items
 
     # 替换标签
@@ -61,3 +62,12 @@ class CnblogsSpiderSpider(scrapy.Spider):
         location = time.index(rule)
         time = time[location + 4:location + 20]
         return time
+
+    # 获取阅读量
+    def get_clicks(self, clisks):
+        start_rule = '('
+        end_rule = ')'
+        start = clisks.index(start_rule)
+        end = clisks.index(end_rule)
+        clisks = clisks[start+1:end]
+        return clisks
