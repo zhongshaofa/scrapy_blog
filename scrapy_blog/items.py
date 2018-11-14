@@ -30,5 +30,7 @@ class ScrapyBlogItem(scrapy.Item):
     clicks = scrapy.Field()
     # 点赞量
     praise = scrapy.Field()
+    # 下载后的路径
+    image_paths = scrapy.Field()
 
     pass

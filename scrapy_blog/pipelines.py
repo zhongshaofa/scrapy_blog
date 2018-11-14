@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
 import pymysql
+import json
+import codecs
+from scrapy import Request
 from scrapy_blog.settings import MYSQL_HOST, MYSQL_PORT, MYSQL_USERNAME, MYSQL_PASSWORD, MYSQL_DBNAME
+from scrapy.pipelines.images import ImagesPipeline
+from scrapy.exceptions import DropItem
 
 
 # Define your item pipelines here
@@ -30,7 +35,8 @@ class ScrapyBlogPipeline(object):
         insert = "INSERT INTO article " \
                  "(`author`, `clicks`, `content`,  `create_time`, `describe`, `head_img`, `praise`, `title`, `url`)\
         VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s')" \
-                 % (item['author'], item['clicks'], pymysql.escape_string(item['content']), item['create_time'], item['describe'], item['head_img'],
+                 % (item['author'], item['clicks'], pymysql.escape_string(item['content']), item['create_time'],
+                    item['describe'], item['head_img'],
                     item['praise'], item['title'], item['url'])
         try:
             self.cursor.execute(insert)
@@ -39,3 +45,17 @@ class ScrapyBlogPipeline(object):
             self.db.rollback()
             return e
         return item['title']
+
+
+class DownloadImagesPipeline(ImagesPipeline):
+    # 下载图片
+    def get_media_requests(self, item, info):
+        if item['head_img'] != '':
+            yield Request(item['head_img'])
+
+    def item_completed(self, results, item, info):
+        image_paths = [x['path'] for ok, x in results if ok]
+        if not image_paths:
+            raise DropItem("Item contains no images")
+        item['image_paths'] = image_paths
+        return item

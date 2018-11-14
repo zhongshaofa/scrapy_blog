@@ -9,7 +9,7 @@ class CnblogsSpiderSpider(scrapy.Spider):
     allowed_domains = ['www.cnblogs.com']
     start_urls = ['https://www.cnblogs.com']
     index = 1
-    number = 10
+    number = 1
 
     # 爬取数据
     def parse(self, response):
@@ -44,7 +44,8 @@ class CnblogsSpiderSpider(scrapy.Spider):
             if items[item] is None:
                 items[item] = ''
                 items[item].strip()
-        items['head_img'] = "http:" + items['head_img']
+        if items['head_img'] != '':
+            items['head_img'] = "https:" + items['head_img']
         items['describe'] = self.filter_html_tag(items['describe'])
         items['create_time'] = self.get_create_time(items['create_time'])
         items['clicks'] = self.get_clicks(items['clicks'])
@@ -69,5 +70,6 @@ class CnblogsSpiderSpider(scrapy.Spider):
         end_rule = ')'
         start = clisks.index(start_rule)
         end = clisks.index(end_rule)
-        clisks = clisks[start+1:end]
+        clisks = clisks[start + 1:end]
         return clisks
+
