@@ -9,7 +9,9 @@ class CnblogsSpiderSpider(scrapy.Spider):
     allowed_domains = ['www.cnblogs.com']
     start_urls = ['https://www.cnblogs.com']
     index = 1
-    number = 1
+
+    # 爬取文章的页数（必要时可以设置为数据库参数）
+    number = 10
 
     # 爬取数据
     def parse(self, response):
@@ -36,6 +38,7 @@ class CnblogsSpiderSpider(scrapy.Spider):
     def parse_content(self, response):
         blog_item = response.meta['items']
         blog_item['content'] = response.xpath("//div//div[@id='cnblogs_post_body']").extract_first()
+        blog_item['article_img_list'] = self.get_article_img(blog_item['content'])
         yield blog_item
 
     # 修正数据
@@ -73,3 +76,7 @@ class CnblogsSpiderSpider(scrapy.Spider):
         clisks = clisks[start + 1:end]
         return clisks
 
+    # 获取文章内所有的图片的URL
+    def get_article_img(self, content):
+        article_img_list = re.findall(r'src="(.+?)" alt', content)
+        return article_img_list

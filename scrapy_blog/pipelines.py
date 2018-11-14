@@ -31,6 +31,8 @@ class ScrapyBlogPipeline(object):
         if article:
             return "数据库中已存在该文章:" + item['title']
 
+        item['content'] = self.correct_content(item['content'], item['article_img_list'], item['article_img_paths'])
+
         # 插入数据库中去
         insert = "INSERT INTO article " \
                  "(`author`, `clicks`, `content`,  `create_time`, `describe`, `head_img`, `praise`, `title`, `url`)\
@@ -46,16 +48,39 @@ class ScrapyBlogPipeline(object):
             return e
         return item['title']
 
+    # 替换文章图片
+    def correct_content(self, content, article_img_list, article_img_paths):
+        for index, article_img in enumerate(article_img_list):
+            correct_article_img = 'http://cdn.99php.cn' + article_img_paths[index].replace('full', '')
+            content = content.replace(article_img, correct_article_img)
+        return content
 
-class DownloadImagesPipeline(ImagesPipeline):
+
+# 下载头像图片
+class DownloadHeadImagesPipeline(ImagesPipeline):
     # 下载图片
     def get_media_requests(self, item, info):
         if item['head_img'] != '':
             yield Request(item['head_img'])
 
     def item_completed(self, results, item, info):
-        image_paths = [x['path'] for ok, x in results if ok]
-        if not image_paths:
+        img_paths = [x['path'] for ok, x in results if ok]
+        if not img_paths:
             raise DropItem("Item contains no images")
-        item['image_paths'] = image_paths
+        item['head_img_paths'] = img_paths
+        return item
+
+
+# 下载文章图片
+class DownloadArticleImagesPipeline(ImagesPipeline):
+    # 下载图片
+    def get_media_requests(self, item, info):
+        for article_img in item['article_img_list']:
+            yield Request(article_img)
+
+    def item_completed(self, results, item, info):
+        img_paths = [x['path'] for ok, x in results if ok]
+        if not img_paths:
+            raise DropItem("Item contains no images")
+        item['article_img_paths'] = img_paths
         return item

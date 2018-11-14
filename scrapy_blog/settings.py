@@ -66,11 +66,12 @@ DOWNLOADER_MIDDLEWARES = {
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-   'scrapy_blog.pipelines.DownloadImagesPipeline': 1,
-   # 'scrapy_blog.pipelines.ScrapyBlogPipeline': 2,
+    'scrapy_blog.pipelines.DownloadHeadImagesPipeline': 1,
+    'scrapy_blog.pipelines.DownloadArticleImagesPipeline': 2,
+    'scrapy_blog.pipelines.ScrapyBlogPipeline': 3,
 }
 # 图片下载地址
-IMAGES_STORE='E:\image'
+IMAGES_STORE = 'E:\image'
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://doc.scrapy.org/en/latest/topics/autothrottle.html
