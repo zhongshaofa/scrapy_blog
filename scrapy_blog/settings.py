@@ -71,7 +71,7 @@ ITEM_PIPELINES = {
     'scrapy_blog.pipelines.ScrapyBlogPipeline': 3,
 }
 # 图片下载地址
-IMAGES_STORE = 'E:\image'
+IMAGES_STORE = '/www/wwwroot/cdn_99php_cn/image'
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://doc.scrapy.org/en/latest/topics/autothrottle.html
@@ -97,6 +97,6 @@ IMAGES_STORE = 'E:\image'
 # Mysql Setting
 MYSQL_HOST = '127.0.0.1'
 MYSQL_PORT = 3306
-MYSQL_USERNAME = 'root'
-MYSQL_PASSWORD = 'root'
+MYSQL_USERNAME = 'scrapy_blog'
+MYSQL_PASSWORD = 'ewsyxsFJLs2KxJLE'
 MYSQL_DBNAME = 'scrapy_blog'

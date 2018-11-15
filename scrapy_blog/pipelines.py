@@ -6,6 +6,7 @@ from scrapy import Request
 from scrapy_blog.settings import MYSQL_HOST, MYSQL_PORT, MYSQL_USERNAME, MYSQL_PASSWORD, MYSQL_DBNAME
 from scrapy.pipelines.images import ImagesPipeline
 from scrapy.exceptions import DropItem
+from scrapy_blog import log
 
 
 # Define your item pipelines here
@@ -46,10 +47,13 @@ class ScrapyBlogPipeline(object):
         except Exception as e:
             self.db.rollback()
             return e
+        log.msg(item['title'], '插入成功')
         return item['title']
 
     # 替换文章图片
     def correct_content(self, content, article_img_list, article_img_paths):
+        log.msg(article_img_list,'下载前文章图片')
+        log.msg(article_img_paths,'下载后文章图片')
         for index, article_img in enumerate(article_img_list):
             correct_article_img = 'http://cdn.99php.cn' + article_img_paths[index].replace('full', '')
             content = content.replace(article_img, correct_article_img)
