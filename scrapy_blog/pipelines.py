@@ -32,7 +32,7 @@ class ScrapyBlogPipeline(object):
         if article:
             return "数据库中已存在该文章:" + item['title']
 
-        item['content'] = self.correct_content(item['content'], item['article_img_list'], item['article_img_paths'])
+            item = self.correct_item(item)
 
         # 插入数据库中去
         insert = "INSERT INTO article " \
@@ -50,14 +50,27 @@ class ScrapyBlogPipeline(object):
         log.msg(item['title'], '插入成功')
         return item['title']
 
-    # 替换文章图片
-    def correct_content(self, content, article_img_list, article_img_paths):
-        log.msg(article_img_list, '下载前文章图片')
-        log.msg(article_img_paths, '下载后文章图片')
-        for index, article_img in enumerate(article_img_list):
-            correct_article_img = 'http://cdn.99php.cn/image/' + article_img_paths[index]
-            content = content.replace(article_img, correct_article_img)
-        return content
+    # 修正数据
+    def correct_item(self, item):
+
+        # 替换文章图片
+        for index, article_img in enumerate(item['article_img_list']):
+            correct_article_img = 'http://cdn.99php.cn/image/' + item['article_img_paths'][index]
+            item['content'] = item['content'].replace(article_img, correct_article_img)
+
+        # 获取替换的头像地址
+        if item['head_img_paths']:
+            item['head_img'] = ''
+        else:
+            item['head_img'] = 'http://cdn.99php.cn/image/' + item['head_img_paths'][0]
+
+        # 获取文章封面
+        if item['article_img_paths']:
+            item['cover_img'] = ''
+        else:
+            item['cover_img'] = 'http://cdn.99php.cn/image/' + item['article_img_paths'][0]
+
+        return item
 
 
 # 下载头像图片

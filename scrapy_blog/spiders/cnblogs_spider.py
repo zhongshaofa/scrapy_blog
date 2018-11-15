@@ -11,7 +11,7 @@ class CnblogsSpiderSpider(scrapy.Spider):
     index = 1
 
     # 爬取文章的页数（必要时可以设置为数据库参数）
-    number = 5
+    number = 1
 
     # 爬取数据
     def parse(self, response):
@@ -52,6 +52,11 @@ class CnblogsSpiderSpider(scrapy.Spider):
         items['describe'] = self.filter_html_tag(items['describe'])
         items['create_time'] = self.get_create_time(items['create_time'])
         items['clicks'] = self.get_clicks(items['clicks'])
+
+        items['head_img_paths'] = []
+        items['article_img_list'] = []
+        items['article_img_paths'] = []
+
         return items
 
     # 替换标签

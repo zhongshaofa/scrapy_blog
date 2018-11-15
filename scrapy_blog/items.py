@@ -14,6 +14,8 @@ class ScrapyBlogItem(scrapy.Item):
 
     # 标题
     title = scrapy.Field()
+    # 文章封面
+    cover_img = scrapy.Field()
     # 描述
     describe = scrapy.Field()
     # 详细链接
