@@ -11,7 +11,7 @@ class CnblogsSpiderSpider(scrapy.Spider):
     index = 1
 
     # 爬取文章的页数（必要时可以设置为数据库参数）
-    number = 10
+    number = 5
 
     # 爬取数据
     def parse(self, response):
