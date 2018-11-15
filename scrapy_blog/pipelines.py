@@ -51,22 +51,24 @@ class ScrapyBlogPipeline(object):
     # 修正数据
     def correct_item(self, item):
 
+        website = 'https://cdn.99php.cn'
+
         # 替换文章图片
         for index, article_img in enumerate(item['article_img_list']):
-            correct_article_img = 'http://cdn.99php.cn/image/' + item['article_img_paths'][index]
+            correct_article_img = website + '/image/' + item['article_img_paths'][index]
             item['content'] = item['content'].replace(article_img, correct_article_img)
 
         # 获取替换的头像地址
         if not item['head_img_paths']:
             item['head_img'] = ''
         else:
-            item['head_img'] = 'http://cdn.99php.cn/image/' + item['head_img_paths'][0]
+            item['head_img'] = website + '/image/' + item['head_img_paths'][0]
 
         # 获取文章封面
         if not item['article_img_paths']:
             item['cover_img'] = ''
         else:
-            item['cover_img'] = 'http://cdn.99php.cn/image/' + item['article_img_paths'][0]
+            item['cover_img'] = website + '/image/' + item['article_img_paths'][0]
 
         return item
 
