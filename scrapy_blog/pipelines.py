@@ -52,10 +52,10 @@ class ScrapyBlogPipeline(object):
 
     # 替换文章图片
     def correct_content(self, content, article_img_list, article_img_paths):
-        log.msg(article_img_list,'下载前文章图片')
-        log.msg(article_img_paths,'下载后文章图片')
+        log.msg(article_img_list, '下载前文章图片')
+        log.msg(article_img_paths, '下载后文章图片')
         for index, article_img in enumerate(article_img_list):
-            correct_article_img = 'http://cdn.99php.cn' + article_img_paths[index].replace('full', '')
+            correct_article_img = 'http://cdn.99php.cn/image/' + article_img_paths[index]
             content = content.replace(article_img, correct_article_img)
         return content
 
