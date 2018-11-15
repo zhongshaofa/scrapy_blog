@@ -38,5 +38,7 @@ class ScrapyBlogItem(scrapy.Item):
     article_img_list = scrapy.Field()
     # 文章图片下载后的路径
     article_img_paths = scrapy.Field()
+    # 采集来源
+    source = scrapy.Field()
 
     pass

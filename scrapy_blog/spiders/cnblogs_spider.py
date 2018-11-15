@@ -11,7 +11,7 @@ class CnblogsSpiderSpider(scrapy.Spider):
     index = 1
 
     # 爬取文章的页数（必要时可以设置为数据库参数）
-    number = 1
+    number = 10
 
     # 爬取数据
     def parse(self, response):
@@ -26,6 +26,7 @@ class CnblogsSpiderSpider(scrapy.Spider):
             blog_item['author'] = item.xpath(".//div//a[@class='lightblue']//text()").extract_first()
             blog_item['clicks'] = item.xpath(".//div//span[@class='article_view']//a/text()").extract_first()
             blog_item['create_time'] = item.xpath(".//div[@class='post_item_foot']").extract_first()
+            blog_item['source'] = 'www.cnblogs.com'
             self.correct_item(blog_item)
             yield scrapy.Request(url=blog_item['url'], meta={'items': blog_item}, callback=self.parse_content,
                                  dont_filter=True)
@@ -52,11 +53,6 @@ class CnblogsSpiderSpider(scrapy.Spider):
         items['describe'] = self.filter_html_tag(items['describe'])
         items['create_time'] = self.get_create_time(items['create_time'])
         items['clicks'] = self.get_clicks(items['clicks'])
-
-        items['head_img_paths'] = []
-        items['article_img_list'] = []
-        items['article_img_paths'] = []
-
         return items
 
     # 替换标签

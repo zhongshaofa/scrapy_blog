@@ -14,7 +14,6 @@ from scrapy_blog import log
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 
-
 class ScrapyBlogPipeline(object):
 
     # 初始化mysql服务
@@ -32,22 +31,21 @@ class ScrapyBlogPipeline(object):
         if article:
             return "数据库中已存在该文章:" + item['title']
 
-            item = self.correct_item(item)
+        item = self.correct_item(item)
 
         # 插入数据库中去
         insert = "INSERT INTO article " \
-                 "(`author`, `clicks`, `content`,  `create_time`, `describe`, `head_img`, `praise`, `title`, `url`)\
-        VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s')" \
+                 "(`author`, `clicks`, `content`,  `create_time`, `describe`, `head_img`, `praise`, `title`, `url`,`cover_img`,`source`)\
+        VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')" \
                  % (item['author'], item['clicks'], pymysql.escape_string(item['content']), item['create_time'],
-                    item['describe'], item['head_img'],
-                    item['praise'], item['title'], item['url'])
+                    item['describe'], item['head_img'], item['praise'], item['title'], item['url'], item['cover_img'],
+                    item['source'])
         try:
             self.cursor.execute(insert)
             self.db.commit()
         except Exception as e:
             self.db.rollback()
             return e
-        log.msg(item['title'], '插入成功')
         return item['title']
 
     # 修正数据
@@ -59,13 +57,13 @@ class ScrapyBlogPipeline(object):
             item['content'] = item['content'].replace(article_img, correct_article_img)
 
         # 获取替换的头像地址
-        if item['head_img_paths']:
+        if not item['head_img_paths']:
             item['head_img'] = ''
         else:
             item['head_img'] = 'http://cdn.99php.cn/image/' + item['head_img_paths'][0]
 
         # 获取文章封面
-        if item['article_img_paths']:
+        if not item['article_img_paths']:
             item['cover_img'] = ''
         else:
             item['cover_img'] = 'http://cdn.99php.cn/image/' + item['article_img_paths'][0]
@@ -79,12 +77,16 @@ class DownloadHeadImagesPipeline(ImagesPipeline):
     def get_media_requests(self, item, info):
         if item['head_img'] != '':
             yield Request(item['head_img'])
+        else:
+            item['head_img_paths'] = []
+            return item
 
     def item_completed(self, results, item, info):
         img_paths = [x['path'] for ok, x in results if ok]
         if not img_paths:
-            raise DropItem("Item contains no images")
-        item['head_img_paths'] = img_paths
+            item['head_img_paths'] = []
+        else:
+            item['head_img_paths'] = img_paths
         return item
 
 
@@ -92,12 +94,16 @@ class DownloadHeadImagesPipeline(ImagesPipeline):
 class DownloadArticleImagesPipeline(ImagesPipeline):
     # 下载图片
     def get_media_requests(self, item, info):
-        for article_img in item['article_img_list']:
-            yield Request(article_img)
+        if item['article_img_list']:
+            for article_img in item['article_img_list']:
+                yield Request(article_img)
+        else:
+            return item
 
     def item_completed(self, results, item, info):
         img_paths = [x['path'] for ok, x in results if ok]
         if not img_paths:
-            raise DropItem("Item contains no images")
-        item['article_img_paths'] = img_paths
+            item['article_img_paths'] = []
+        else:
+            item['article_img_paths'] = img_paths
         return item
