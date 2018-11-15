@@ -71,7 +71,7 @@ ITEM_PIPELINES = {
     'scrapy_blog.pipelines.ScrapyBlogPipeline': 3,
 }
 # 图片下载地址
-IMAGES_STORE = '/www/wwwroot/cdn_99php_cn/image'
+IMAGES_STORE = '/www/wwwroot/cdn.99php.cn/image'
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://doc.scrapy.org/en/latest/topics/autothrottle.html
