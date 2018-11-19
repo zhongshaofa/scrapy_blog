@@ -6,7 +6,7 @@ from scrapy import Request
 from scrapy_blog.settings import MYSQL_HOST, MYSQL_PORT, MYSQL_USERNAME, MYSQL_PASSWORD, MYSQL_DBNAME
 from scrapy.pipelines.images import ImagesPipeline
 from scrapy.exceptions import DropItem
-from scrapy_blog import log
+from scrapy_blog.log import msg
 
 
 # Define your item pipelines here
@@ -46,6 +46,7 @@ class ScrapyBlogPipeline(object):
         except Exception as e:
             self.db.rollback()
             return e
+        msg(item['title'], '入库成功')
         return item['title']
 
     # 修正数据
