@@ -25,7 +25,7 @@ class ScrapyBlogPipeline(object):
     def process_item(self, item, spider):
 
         # 查询数据库中是否存在该数据
-        query = "SELECT * from article WHERE title='" + item['title'] + "'"
+        query = "SELECT * from spider_article WHERE title='" + item['title'] + "'"
         self.cursor.execute(query)
         article = self.cursor.fetchall()
         if article:
@@ -34,7 +34,7 @@ class ScrapyBlogPipeline(object):
         item = self.correct_item(item)
 
         # 插入数据库中去
-        insert = "INSERT INTO article " \
+        insert = "INSERT INTO spider_article " \
                  "(`author`, `clicks`, `content`,  `create_time`, `describe`, `head_img`, `praise`, `title`, `url`,`cover_img`,`source`)\
         VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')" \
                  % (item['author'], item['clicks'], pymysql.escape_string(item['content']), item['create_time'],
