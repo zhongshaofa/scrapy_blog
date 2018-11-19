@@ -22,7 +22,7 @@ class CnblogsSpiderSpider(scrapy.Spider):
         self.cursor.execute(query)
         page_number = self.cursor.fetchone()
         if page_number:
-            self.number = page_number[0]
+            self.number = int(page_number[0])
 
     # 爬取数据
     def parse(self, response):
@@ -38,6 +38,7 @@ class CnblogsSpiderSpider(scrapy.Spider):
             blog_item['clicks'] = item.xpath(".//div//span[@class='article_view']//a/text()").extract_first()
             blog_item['create_time'] = item.xpath(".//div[@class='post_item_foot']").extract_first()
             blog_item['source'] = 'www.cnblogs.com'
+            blog_item['article_img_list'] = []
             self.correct_item(blog_item)
             yield scrapy.Request(url=blog_item['url'], meta={'items': blog_item}, callback=self.parse_content,
                                  dont_filter=True)
@@ -90,5 +91,31 @@ class CnblogsSpiderSpider(scrapy.Spider):
 
     # 获取文章内所有的图片的URL
     def get_article_img(self, content):
-        article_img_list = re.findall(r'src="(.+?)" alt', content)
+        article_img_png = re.findall(r'src="http(.+?).png', content)
+        article_img_jpg = re.findall(r'src="http(.+?).jpg', content)
+        article_img_jpeg = re.findall(r'src="http(.+?).jpeg', content)
+        article_img_gif = re.findall(r'src="http(.+?).gif', content)
+
+        article_img_png = self.replace_img_url(article_img_png, 'png')
+        article_img_jpg = self.replace_img_url(article_img_jpg, 'jpg')
+        article_img_jpeg = self.replace_img_url(article_img_jpeg, 'jpeg')
+        article_img_gif = self.replace_img_url(article_img_gif, 'gif')
+
+        article_img_list = []
+        article_img_list.extend(article_img_png)
+        article_img_list.extend(article_img_jpg)
+        article_img_list.extend(article_img_jpeg)
+        article_img_list.extend(article_img_gif)
+
         return article_img_list
+
+    # 修复图片链接
+    def replace_img_url(self, list, type):
+        if not list:
+            return list
+        else:
+            i = 0
+            for value in list:
+                list[i] = 'http' + value + '.' + type
+                i = i + 1
+        return list
