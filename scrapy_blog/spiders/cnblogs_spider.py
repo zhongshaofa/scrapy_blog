@@ -2,6 +2,8 @@
 import scrapy
 import re
 from scrapy_blog.items import ScrapyBlogItem
+import pymysql
+from scrapy_blog.settings import MYSQL_HOST, MYSQL_PORT, MYSQL_USERNAME, MYSQL_PASSWORD, MYSQL_DBNAME
 
 
 class CnblogsSpiderSpider(scrapy.Spider):
@@ -12,6 +14,15 @@ class CnblogsSpiderSpider(scrapy.Spider):
 
     # 爬取文章的页数（必要时可以设置为数据库参数）
     number = 5
+
+    def __init__(self):
+        self.db = pymysql.connect(MYSQL_HOST, MYSQL_USERNAME, MYSQL_PASSWORD, MYSQL_DBNAME)
+        self.cursor = self.db.cursor()
+        query = "SELECT value from system_config where name = 'SpiderPageNumber'"
+        self.cursor.execute(query)
+        page_number = self.cursor.fetchone()
+        if page_number:
+            self.number = page_number[0]
 
     # 爬取数据
     def parse(self, response):

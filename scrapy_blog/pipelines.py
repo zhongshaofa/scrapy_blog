@@ -54,7 +54,7 @@ class ScrapyBlogPipeline(object):
         website = 'https://cdn.99php.cn'
 
         # 替换文章图片
-        if not item['article_img_list']:
+        if item['article_img_list']:
             for index, article_img in enumerate(item['article_img_list']):
                 correct_article_img = website + '/image/' + item['article_img_paths'][index]
                 item['content'] = item['content'].replace(article_img, correct_article_img)
