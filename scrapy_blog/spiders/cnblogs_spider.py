@@ -65,6 +65,7 @@ class CnblogsSpiderSpider(scrapy.Spider):
         items['describe'] = self.filter_html_tag(items['describe'])
         items['create_time'] = self.get_create_time(items['create_time'])
         items['clicks'] = self.get_clicks(items['clicks'])
+        items['create_time'] =  items['create_time'] + ':00'
         return items
 
     # 替换标签
